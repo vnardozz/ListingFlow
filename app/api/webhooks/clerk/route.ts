@@ -1,10 +1,10 @@
 import type { UserJSON } from "@clerk/nextjs/server";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { sendSignupToLoops } from "@/lib/loops";
 import { createSupabaseAdmin } from "@/lib/supabase";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   let event;
 
   try {
