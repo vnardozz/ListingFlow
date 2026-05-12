@@ -1,6 +1,7 @@
+import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { getSupabaseConfigError } from "@/lib/config";
+import { isSupabaseConfigured } from "@/lib/config";
 import { requiredEnv } from "@/lib/env";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { stripe, unixToIso } from "@/lib/stripe";
@@ -23,11 +24,6 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown webhook error";
     return NextResponse.json({ error: message }, { status: 400 });
-  }
-
-  const configError = getSupabaseConfigError();
-  if (configError) {
-    return NextResponse.json({ error: configError }, { status: 503 });
   }
 
   try {
@@ -70,21 +66,70 @@ async function upsertSubscription(subscription: Stripe.Subscription) {
     current_period_end: unixToIso(firstItem?.current_period_end),
     updated_at: new Date().toISOString(),
   };
-  const supabase = createSupabaseAdmin();
 
   if (userId) {
-    await supabase.from("profiles").upsert({
-      user_id: userId,
-      ...payload,
-    });
+    await updateClerkSubscription(userId, payload);
+    await upsertSupabaseSubscription(userId, payload);
     return;
   }
 
   if (customerId) {
-    await supabase.from("profiles").update(payload).eq("stripe_customer_id", customerId);
+    await updateSupabaseSubscriptionByCustomer(customerId, payload);
   }
 }
 
 function customerToString(customer: string | Stripe.Customer | Stripe.DeletedCustomer) {
   return typeof customer === "string" ? customer : customer.id;
 }
+
+async function updateClerkSubscription(userId: string, payload: SubscriptionPayload) {
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+
+  await client.users.updateUserMetadata(userId, {
+    privateMetadata: {
+      ...user.privateMetadata,
+      stripeCustomerId: payload.stripe_customer_id,
+      subscriptionStatus: payload.subscription_status,
+      trialEndsAt: payload.trial_ends_at,
+      currentPeriodEnd: payload.current_period_end,
+    },
+  });
+}
+
+async function upsertSupabaseSubscription(userId: string, payload: SubscriptionPayload) {
+  if (!isSupabaseConfigured()) {
+    return;
+  }
+
+  const supabase = createSupabaseAdmin();
+  const { error } = await supabase.from("profiles").upsert({
+    user_id: userId,
+    ...payload,
+  });
+
+  if (error) {
+    console.error("Could not persist Stripe subscription in Supabase", error);
+  }
+}
+
+async function updateSupabaseSubscriptionByCustomer(customerId: string, payload: SubscriptionPayload) {
+  if (!isSupabaseConfigured()) {
+    return;
+  }
+
+  const supabase = createSupabaseAdmin();
+  const { error } = await supabase.from("profiles").update(payload).eq("stripe_customer_id", customerId);
+
+  if (error) {
+    console.error("Could not update Stripe subscription in Supabase", error);
+  }
+}
+
+type SubscriptionPayload = {
+  stripe_customer_id: string;
+  subscription_status: Stripe.Subscription.Status;
+  trial_ends_at: string | null;
+  current_period_end: string | null;
+  updated_at: string;
+};

@@ -1,3 +1,5 @@
+import { clerkClient } from "@clerk/nextjs/server";
+import { isSupabaseConfigured } from "@/lib/config";
 import type {
   DripEmail,
   GenerationRecord,
@@ -62,6 +64,10 @@ export function mapGeneration(row: GenerationRow): GenerationRecord {
 }
 
 export async function getProfile(userId: string) {
+  if (!isSupabaseConfigured()) {
+    return getClerkProfile(userId);
+  }
+
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("profiles")
@@ -75,10 +81,14 @@ export async function getProfile(userId: string) {
     throw error;
   }
 
-  return mapProfile(data);
+  return mapProfile(data) ?? getClerkProfile(userId);
 }
 
 export async function getHistory(userId: string) {
+  if (!isSupabaseConfigured()) {
+    return [];
+  }
+
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("generations")
@@ -103,4 +113,49 @@ function normalizeFeatures(features: string[]): [string, string, string] {
     features[1] ?? "",
     features[2] ?? "",
   ];
+}
+
+async function getClerkProfile(userId: string): Promise<UserProfile | null> {
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+  const metadata = user.privateMetadata as Record<string, unknown>;
+
+  return {
+    userId,
+    email: primaryEmail(user),
+    stripeCustomerId: stringOrNull(metadata.stripeCustomerId),
+    subscriptionStatus: subscriptionStatusOrNone(metadata.subscriptionStatus),
+    trialEndsAt: stringOrNull(metadata.trialEndsAt),
+    currentPeriodEnd: stringOrNull(metadata.currentPeriodEnd),
+  };
+}
+
+function primaryEmail(user: Awaited<ReturnType<Awaited<ReturnType<typeof clerkClient>>["users"]["getUser"]>>) {
+  return (
+    user.emailAddresses.find((email) => email.id === user.primaryEmailAddressId)?.emailAddress ??
+    user.emailAddresses[0]?.emailAddress ??
+    null
+  );
+}
+
+function stringOrNull(value: unknown) {
+  return typeof value === "string" && value ? value : null;
+}
+
+function subscriptionStatusOrNone(value: unknown): SubscriptionStatus {
+  const statuses: SubscriptionStatus[] = [
+    "active",
+    "trialing",
+    "past_due",
+    "canceled",
+    "incomplete",
+    "incomplete_expired",
+    "unpaid",
+    "paused",
+    "none",
+  ];
+
+  return typeof value === "string" && statuses.includes(value as SubscriptionStatus)
+    ? (value as SubscriptionStatus)
+    : "none";
 }
