@@ -70,11 +70,17 @@ async function loadDashboardData(userId: string) {
 type AuthComponents = {
   SignInButton: React.ComponentType<{
     children: React.ReactNode;
+    fallbackRedirectUrl?: string;
+    forceRedirectUrl?: string;
     mode?: "modal" | "redirect";
+    oauthFlow?: "auto" | "redirect" | "popup";
   }>;
   SignUpButton: React.ComponentType<{
     children: React.ReactNode;
+    fallbackRedirectUrl?: string;
+    forceRedirectUrl?: string;
     mode?: "modal" | "redirect";
+    oauthFlow?: "auto" | "redirect" | "popup";
   }>;
   UserButton: React.ComponentType;
 };
@@ -114,10 +120,20 @@ function LandingPage({
             <div className="landing-actions">
               {SignInButton && SignUpButton ? (
                 <>
-                  <SignUpButton mode="modal">
+                  <SignUpButton
+                    fallbackRedirectUrl="/dashboard"
+                    forceRedirectUrl="/dashboard"
+                    mode="redirect"
+                    oauthFlow="redirect"
+                  >
                     <button className="button landing-primary">Start free trial</button>
                   </SignUpButton>
-                  <SignInButton mode="modal">
+                  <SignInButton
+                    fallbackRedirectUrl="/dashboard"
+                    forceRedirectUrl="/dashboard"
+                    mode="redirect"
+                    oauthFlow="redirect"
+                  >
                     <button className="button landing-secondary">Log in</button>
                   </SignInButton>
                 </>
@@ -245,10 +261,20 @@ function Header({
         </div>
       ) : (
         <div className="auth-actions">
-          <SignInButton mode="modal">
+          <SignInButton
+            fallbackRedirectUrl="/dashboard"
+            forceRedirectUrl="/dashboard"
+            mode="redirect"
+            oauthFlow="redirect"
+          >
             <button className="button secondary">Log in</button>
           </SignInButton>
-          <SignUpButton mode="modal">
+          <SignUpButton
+            fallbackRedirectUrl="/dashboard"
+            forceRedirectUrl="/dashboard"
+            mode="redirect"
+            oauthFlow="redirect"
+          >
             <button className="button">Start free trial</button>
           </SignUpButton>
         </div>
