@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { isClerkConfigured } from "@/lib/config";
 import { getHistory, getProfile } from "@/lib/data";
 import ListingFlowApp from "@/app/listing-flow-app";
@@ -88,12 +89,12 @@ function LandingPage({
             <div className="landing-alert">{setupMessage}</div>
           ) : (
             <div className="landing-actions">
-              <a className="button landing-primary" href="/sign-up">
+              <Link className="button landing-primary" href="/sign-up">
                 Start free trial
-              </a>
-              <a className="button landing-secondary" href="/sign-in">
+              </Link>
+              <Link className="button landing-secondary" href="/sign-in">
                 Log in
-              </a>
+              </Link>
             </div>
           )}
 
@@ -217,12 +218,12 @@ function Header({
         </div>
       ) : (
         <div className="auth-actions">
-          <a className="button secondary" href="/sign-in">
+          <Link className="button secondary" href="/sign-in">
             Log in
-          </a>
-          <a className="button" href="/sign-up">
+          </Link>
+          <Link className="button" href="/sign-up">
             Start free trial
-          </a>
+          </Link>
         </div>
       )}
     </header>
