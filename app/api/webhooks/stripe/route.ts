@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
+import { getSupabaseConfigError } from "@/lib/config";
 import { requiredEnv } from "@/lib/env";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { stripe, unixToIso } from "@/lib/stripe";
@@ -24,16 +25,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+  const configError = getSupabaseConfigError();
+  if (configError) {
+    return NextResponse.json({ error: configError }, { status: 503 });
   }
 
-  if (
-    event.type === "customer.subscription.created" ||
-    event.type === "customer.subscription.updated" ||
-    event.type === "customer.subscription.deleted"
-  ) {
-    await upsertSubscription(event.data.object as Stripe.Subscription);
+  try {
+    if (event.type === "checkout.session.completed") {
+      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+    }
+
+    if (
+      event.type === "customer.subscription.created" ||
+      event.type === "customer.subscription.updated" ||
+      event.type === "customer.subscription.deleted"
+    ) {
+      await upsertSubscription(event.data.object as Stripe.Subscription);
+    }
+  } catch (error) {
+    console.error("Stripe webhook handling failed", error);
+    return NextResponse.json({ error: "Stripe webhook handling failed." }, { status: 503 });
   }
 
   return NextResponse.json({ received: true });

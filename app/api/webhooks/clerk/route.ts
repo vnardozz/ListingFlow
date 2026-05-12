@@ -1,6 +1,7 @@
 import type { UserJSON } from "@clerk/nextjs/server";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest, NextResponse } from "next/server";
+import { getSupabaseConfigError } from "@/lib/config";
 import { sendSignupToLoops } from "@/lib/loops";
 import { createSupabaseAdmin } from "@/lib/supabase";
 
@@ -25,20 +26,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  const supabase = createSupabaseAdmin();
-  await supabase.from("profiles").upsert({
-    user_id: user.id,
-    email,
-    subscription_status: "none",
-    updated_at: new Date().toISOString(),
-  });
+  const configError = getSupabaseConfigError();
+  if (configError) {
+    return NextResponse.json({ error: configError }, { status: 503 });
+  }
 
-  await sendSignupToLoops({
-    userId: user.id,
-    email,
-    firstName: user.first_name,
-    lastName: user.last_name,
-  });
+  try {
+    const supabase = createSupabaseAdmin();
+    await supabase.from("profiles").upsert({
+      user_id: user.id,
+      email,
+      subscription_status: "none",
+      updated_at: new Date().toISOString(),
+    });
+
+    await sendSignupToLoops({
+      userId: user.id,
+      email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+    });
+  } catch (error) {
+    console.error("Clerk webhook handling failed", error);
+    return NextResponse.json({ error: "Clerk webhook handling failed." }, { status: 503 });
+  }
 
   return NextResponse.json({ received: true });
 }
