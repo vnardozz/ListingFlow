@@ -16,6 +16,10 @@ export function getSupabaseConfigError() {
   return `Supabase is not configured. Missing: ${missing.join(", ")}.`;
 }
 
+export function isSupabaseConfigured() {
+  return getSupabaseConfigError() === null;
+}
+
 export function getStripeConfigError() {
   const missing = missingEnv(["STRIPE_SECRET_KEY", "STRIPE_PRICE_ID"]);
 

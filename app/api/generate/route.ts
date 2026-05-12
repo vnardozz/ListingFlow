@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { generateListingContent } from "@/lib/claude";
-import { getClaudeConfigError, getSupabaseConfigError, isClerkConfigured } from "@/lib/config";
+import { getClaudeConfigError, isClerkConfigured, isSupabaseConfigured } from "@/lib/config";
 import { getProfile, mapGeneration } from "@/lib/data";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { hasSubscriptionAccess } from "@/lib/subscription";
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const configError = getSupabaseConfigError() ?? getClaudeConfigError();
+  const configError = getClaudeConfigError();
   if (configError) {
     return NextResponse.json({ error: configError }, { status: 503 });
   }
@@ -45,6 +45,17 @@ export async function POST(request: Request) {
     }
 
     const content = await generateListingContent(input.data);
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json({
+        generation: {
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          ...input.data,
+          ...content,
+        },
+      });
+    }
+
     const supabase = createSupabaseAdmin();
     const { data, error } = await supabase
       .from("generations")

@@ -1,6 +1,6 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { getStripeConfigError, getSupabaseConfigError, isClerkConfigured } from "@/lib/config";
+import { getStripeConfigError, isClerkConfigured, isSupabaseConfigured } from "@/lib/config";
 import { appUrl, requiredEnv } from "@/lib/env";
 import { getProfile } from "@/lib/data";
 import { createSupabaseAdmin } from "@/lib/supabase";
@@ -17,7 +17,7 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const configError = getStripeConfigError() ?? getSupabaseConfigError();
+  const configError = getStripeConfigError();
   if (configError) {
     return NextResponse.json({ error: configError }, { status: 503 });
   }
@@ -28,14 +28,7 @@ export async function POST() {
     const profile = await getProfile(userId);
     const stripeCustomerId = profile?.stripeCustomerId ?? (await createStripeCustomer(userId, email));
 
-    const supabase = createSupabaseAdmin();
-    await supabase.from("profiles").upsert({
-      user_id: userId,
-      email,
-      stripe_customer_id: stripeCustomerId,
-      subscription_status: profile?.subscriptionStatus ?? "none",
-      updated_at: new Date().toISOString(),
-    });
+    await saveStripeCustomer(userId, email, stripeCustomerId, profile?.subscriptionStatus ?? "none");
 
     const session = await stripe().checkout.sessions.create({
       mode: "subscription",
@@ -79,4 +72,38 @@ async function createStripeCustomer(userId: string, email: string | null) {
   });
 
   return customer.id;
+}
+
+async function saveStripeCustomer(
+  userId: string,
+  email: string | null,
+  stripeCustomerId: string,
+  subscriptionStatus: string,
+) {
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+  await client.users.updateUserMetadata(userId, {
+    privateMetadata: {
+      ...user.privateMetadata,
+      stripeCustomerId,
+      subscriptionStatus,
+    },
+  });
+
+  if (!isSupabaseConfigured()) {
+    return;
+  }
+
+  const supabase = createSupabaseAdmin();
+  const { error } = await supabase.from("profiles").upsert({
+    user_id: userId,
+    email,
+    stripe_customer_id: stripeCustomerId,
+    subscription_status: subscriptionStatus,
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    console.error("Could not persist Stripe customer in Supabase", error);
+  }
 }
