@@ -215,7 +215,7 @@ function MarketingVisual() {
       <Image
         alt="ListingFlow listing, social caption, and buyer email cards over a modern real estate scene"
         className="marketing-image"
-        height={880}
+        height={940}
         priority
         src="/marketing-visual.svg"
         width={720}
