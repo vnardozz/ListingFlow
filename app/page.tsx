@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { isClerkConfigured } from "@/lib/config";
 import { getHistory, getProfile } from "@/lib/data";
 import ListingFlowApp from "@/app/listing-flow-app";
@@ -211,10 +212,13 @@ function FeatureCard({
 function MarketingVisual() {
   return (
     <div className="marketing-visual">
-      <img
+      <Image
         alt="ListingFlow listing, social caption, and buyer email cards over a modern real estate scene"
         className="marketing-image"
+        height={880}
+        priority
         src="/marketing-visual.svg"
+        width={720}
       />
     </div>
   );
