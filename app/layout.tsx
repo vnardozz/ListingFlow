@@ -23,7 +23,12 @@ export default async function RootLayout({
   const { ClerkProvider } = await import("@clerk/nextjs");
 
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInFallbackRedirectUrl="/dashboard"
+      signInUrl="/sign-in"
+      signUpFallbackRedirectUrl="/dashboard"
+      signUpUrl="/sign-up"
+    >
       <html lang="en">
         <body>{children}</body>
       </html>

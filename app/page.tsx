@@ -14,7 +14,7 @@ export default async function Home() {
     );
   }
 
-  const [{ SignInButton, SignUpButton, UserButton }, { auth }] = await Promise.all([
+  const [{ UserButton }, { auth }] = await Promise.all([
     import("@clerk/nextjs"),
     import("@clerk/nextjs/server"),
   ]);
@@ -24,22 +24,13 @@ export default async function Home() {
     : { profile: null, history: [], setupError: null };
 
   if (!userId) {
-    return (
-      <LandingPage
-        authComponents={{
-          SignInButton,
-          SignUpButton,
-        }}
-      />
-    );
+    return <LandingPage />;
   }
 
   return (
     <main className="page-shell">
       <Header
         authComponents={{
-          SignInButton,
-          SignUpButton,
           UserButton,
         }}
         userId={userId}
@@ -68,35 +59,14 @@ async function loadDashboardData(userId: string) {
 }
 
 type AuthComponents = {
-  SignInButton: React.ComponentType<{
-    children: React.ReactNode;
-    fallbackRedirectUrl?: string;
-    forceRedirectUrl?: string;
-    mode?: "modal" | "redirect";
-    oauthFlow?: "auto" | "redirect" | "popup";
-  }>;
-  SignUpButton: React.ComponentType<{
-    children: React.ReactNode;
-    fallbackRedirectUrl?: string;
-    forceRedirectUrl?: string;
-    mode?: "modal" | "redirect";
-    oauthFlow?: "auto" | "redirect" | "popup";
-  }>;
   UserButton: React.ComponentType;
 };
 
-type LandingAuthComponents = Pick<AuthComponents, "SignInButton" | "SignUpButton">;
-
 function LandingPage({
-  authComponents,
   setupMessage,
 }: {
-  authComponents?: LandingAuthComponents;
   setupMessage?: string;
 }) {
-  const SignInButton = authComponents?.SignInButton;
-  const SignUpButton = authComponents?.SignUpButton;
-
   return (
     <main className="landing-shell">
       <section className="landing-hero" aria-label="ListingFlow homepage">
@@ -118,26 +88,12 @@ function LandingPage({
             <div className="landing-alert">{setupMessage}</div>
           ) : (
             <div className="landing-actions">
-              {SignInButton && SignUpButton ? (
-                <>
-                  <SignUpButton
-                    fallbackRedirectUrl="/dashboard"
-                    forceRedirectUrl="/dashboard"
-                    mode="redirect"
-                    oauthFlow="redirect"
-                  >
-                    <button className="button landing-primary">Start free trial</button>
-                  </SignUpButton>
-                  <SignInButton
-                    fallbackRedirectUrl="/dashboard"
-                    forceRedirectUrl="/dashboard"
-                    mode="redirect"
-                    oauthFlow="redirect"
-                  >
-                    <button className="button landing-secondary">Log in</button>
-                  </SignInButton>
-                </>
-              ) : null}
+              <a className="button landing-primary" href="/sign-up">
+                Start free trial
+              </a>
+              <a className="button landing-secondary" href="/sign-in">
+                Log in
+              </a>
             </div>
           )}
 
@@ -247,7 +203,7 @@ function Header({
   authComponents: AuthComponents;
   userId?: string | null;
 }) {
-  const { SignInButton, SignUpButton, UserButton } = authComponents;
+  const { UserButton } = authComponents;
 
   return (
     <header className="topbar">
@@ -261,22 +217,12 @@ function Header({
         </div>
       ) : (
         <div className="auth-actions">
-          <SignInButton
-            fallbackRedirectUrl="/dashboard"
-            forceRedirectUrl="/dashboard"
-            mode="redirect"
-            oauthFlow="redirect"
-          >
-            <button className="button secondary">Log in</button>
-          </SignInButton>
-          <SignUpButton
-            fallbackRedirectUrl="/dashboard"
-            forceRedirectUrl="/dashboard"
-            mode="redirect"
-            oauthFlow="redirect"
-          >
-            <button className="button">Start free trial</button>
-          </SignUpButton>
+          <a className="button secondary" href="/sign-in">
+            Log in
+          </a>
+          <a className="button" href="/sign-up">
+            Start free trial
+          </a>
         </div>
       )}
     </header>
