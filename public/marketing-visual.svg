@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 880" role="img" aria-labelledby="title desc">
+  <title id="title">ListingFlow marketing visual</title>
+  <desc id="desc">A modern listing scene with property, MLS listing, social caption, and buyer follow-up email cards.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#dbeeff"/>
+      <stop offset="0.42" stop-color="#eef6ff"/>
+      <stop offset="1" stop-color="#c5d4e7"/>
+    </linearGradient>
+    <linearGradient id="house" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#2f3d4a"/>
+      <stop offset="0.44" stop-color="#9b7658"/>
+      <stop offset="1" stop-color="#41352d"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#e8f5ff"/>
+      <stop offset="1" stop-color="#5e7487"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#5578f2" stop-opacity="0.88"/>
+      <stop offset="1" stop-color="#163ebd" stop-opacity="0.98"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#071233" flood-opacity="0.22"/>
+    </filter>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#071233" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect width="720" height="880" fill="url(#sky)"/>
+  <circle cx="104" cy="162" r="132" fill="#fff" opacity="0.5"/>
+  <circle cx="628" cy="84" r="108" fill="#b6dcff" opacity="0.48"/>
+
+  <g opacity="0.42">
+    <path d="M620 74c24 26 54 60 52 108-2 46-36 69-72 68-39-1-61-35-53-74 6-30 34-53 73-102Z" fill="#4d7a5f"/>
+    <path d="M660 95v242" stroke="#45644d" stroke-width="11" stroke-linecap="round"/>
+    <path d="M34 268c39-83 106-119 190-108 62 8 119 45 166 111" fill="none" stroke="#ffffff" stroke-width="44" stroke-linecap="round" opacity="0.65"/>
+  </g>
+
+  <g transform="translate(38 208)" filter="url(#softShadow)">
+    <path d="M80 132 310 36l276 104v296H80V132Z" fill="url(#house)"/>
+    <path d="M60 136 308 0l310 138-18 35L309 48 80 170Z" fill="#3d332d"/>
+    <rect x="128" y="150" width="116" height="208" rx="8" fill="url(#glass)" stroke="#2d2725" stroke-width="8"/>
+    <rect x="276" y="110" width="124" height="248" rx="8" fill="url(#glass)" stroke="#2d2725" stroke-width="8"/>
+    <rect x="432" y="164" width="104" height="194" rx="8" fill="url(#glass)" stroke="#2d2725" stroke-width="8"/>
+    <rect x="84" y="378" width="500" height="58" fill="#211d1a" opacity="0.5"/>
+    <rect x="108" y="408" width="470" height="20" fill="#d1b083" opacity="0.8"/>
+    <circle cx="146" cy="132" r="8" fill="#ffe0a5"/>
+    <circle cx="322" cy="92" r="8" fill="#ffe0a5"/>
+    <circle cx="484" cy="146" r="8" fill="#ffe0a5"/>
+  </g>
+
+  <g transform="translate(42 486)">
+    <path d="M120 88c-15-55 17-99 60-105 42-5 77 25 87 76 9 49-7 88-33 116H137c-10-22-11-51-17-87Z" fill="#251f1d"/>
+    <path d="M126 168c29-48 122-51 154 8l34 166H74l52-174Z" fill="#e5d8c8"/>
+    <path d="M110 210c25 42 82 61 148 40l18 94H72l38-134Z" fill="#cdb99f"/>
+    <rect x="260" y="232" width="170" height="108" rx="8" fill="#e7f0f8" stroke="#9eb2c4" stroke-width="5" transform="rotate(6 345 286)"/>
+    <rect x="285" y="252" width="106" height="56" rx="4" fill="#ffffff" opacity="0.9" transform="rotate(6 338 280)"/>
+    <path d="M0 372c67-55 172-64 285-50 124 16 247 2 373-64v150H0Z" fill="url(#wave)" opacity="0.95"/>
+    <path d="M0 320c87 38 181 51 282 35 113-18 231-35 376 6v47H0Z" fill="#385ee0" opacity="0.5"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="232" y="40" width="418" height="192" rx="18" fill="#ffffff" opacity="0.94"/>
+    <path d="M232 96h418" stroke="#e7eaf0" stroke-width="2"/>
+    <text x="254" y="77" fill="#11182d" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="800">New Listing</text>
+    <rect x="254" y="118" width="132" height="78" rx="8" fill="#274154"/>
+    <path d="M267 173 322 132l52 41v23H267Z" fill="#b78b5e"/>
+    <path d="M274 156h98" stroke="#eef6ff" stroke-width="8" opacity="0.55"/>
+    <text x="410" y="146" fill="#11182d" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800">123 Maple Way</text>
+    <text x="410" y="169" fill="#232b42" font-family="Arial, Helvetica, sans-serif" font-size="14">Austin, TX 78704</text>
+    <text x="410" y="202" fill="#17213a" font-family="Arial, Helvetica, sans-serif" font-size="13">3 bd     2.5 ba     2,150 sqft</text>
+
+    <rect x="270" y="210" width="386" height="184" rx="16" fill="#ffffff"/>
+    <path d="M270 224c0-8 6-14 14-14h4v184h-4c-8 0-14-6-14-14Z" fill="#3f6de8"/>
+    <path d="M288 224c0-8 6-14 14-14h6v184h-6c-8 0-14-6-14-14Z" fill="#b65cff" opacity="0.65"/>
+    <text x="314" y="250" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">MLS Listing</text>
+    <text x="572" y="250" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
+    <circle cx="634" cy="244" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
+    <text x="314" y="286" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="15">
+      <tspan x="314" dy="0">Stunning modern home in the heart of 78704! Light-</tspan>
+      <tspan x="314" dy="22">filled open floor plan, designer finishes, chef's kitchen,</tspan>
+      <tspan x="314" dy="22">and a private backyard oasis. Walkable to coffee,</tspan>
+      <tspan x="314" dy="22">dining, and parks. Move-in ready!</tspan>
+    </text>
+    <rect x="314" y="348" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
+    <text x="340" y="367" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
+
+    <rect x="274" y="410" width="386" height="164" rx="16" fill="#ffffff"/>
+    <text x="320" y="448" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">Social Caption</text>
+    <text x="578" y="448" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
+    <circle cx="638" cy="442" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
+    <rect x="300" y="430" width="20" height="20" rx="6" fill="#f55c8a"/>
+    <text x="314" y="486" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="15">
+      <tspan x="314" dy="0">Modern design. Prime location. Everyday luxury.</tspan>
+      <tspan x="314" dy="22">123 Maple Way is the one.</tspan>
+      <tspan x="314" dy="22">#JustListed #78704 #AustinRealEstate</tspan>
+    </text>
+    <rect x="314" y="532" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
+    <text x="340" y="551" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
+
+    <rect x="274" y="590" width="386" height="244" rx="16" fill="#ffffff"/>
+    <text x="318" y="628" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">Buyer Follow-Up Email</text>
+    <text x="578" y="628" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
+    <circle cx="638" cy="622" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
+    <path d="M300 612h22v16h-22zM300 613l11 8 11-8" fill="none" stroke="#3f6de8" stroke-width="2"/>
+    <text x="314" y="668" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="15">
+      <tspan x="314" dy="0">Hi Alex,</tspan>
+      <tspan x="314" dy="25">Just checking in - are you still looking in the 78704</tspan>
+      <tspan x="314" dy="22">area? I found a few homes that might be a great</tspan>
+      <tspan x="314" dy="22">fit for what you're looking for.</tspan>
+      <tspan x="314" dy="22">Want me to send them over?</tspan>
+      <tspan x="314" dy="36">Best,</tspan>
+      <tspan x="314" dy="22">Your Agent</tspan>
+    </text>
+    <rect x="314" y="790" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
+    <text x="340" y="809" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
+  </g>
+</svg>

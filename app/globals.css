@@ -271,8 +271,21 @@ a {
 
 .marketing-visual {
   align-self: stretch;
+  display: flex;
+  justify-content: flex-end;
   min-height: 640px;
   position: relative;
+}
+
+.marketing-image {
+  height: min(78vh, 820px);
+  max-height: 820px;
+  max-width: none;
+  object-fit: contain;
+  position: relative;
+  right: -36px;
+  width: min(58vw, 650px);
+  z-index: 1;
 }
 
 .home-scene {
@@ -786,7 +799,15 @@ a {
   }
 
   .marketing-visual {
+    justify-content: center;
     min-height: 640px;
+  }
+
+  .marketing-image {
+    height: auto;
+    max-width: 680px;
+    right: 0;
+    width: 100%;
   }
 
   .home-scene {
@@ -860,7 +881,7 @@ a {
   }
 
   .marketing-visual {
-    min-height: 560px;
+    min-height: auto;
   }
 
   .home-scene {

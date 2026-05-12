@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { isClerkConfigured } from "@/lib/config";
 import { getHistory, getProfile } from "@/lib/data";
 import ListingFlowApp from "@/app/listing-flow-app";
@@ -210,68 +211,15 @@ function FeatureCard({
 
 function MarketingVisual() {
   return (
-    <div className="marketing-visual" aria-hidden="true">
-      <div className="home-scene">
-        <div className="sun-glow" />
-        <div className="house">
-          <div className="roof" />
-          <div className="house-body">
-            <span />
-            <span />
-            <span />
-          </div>
-        </div>
-        <div className="agent-card">
-          <div className="agent-head" />
-          <div className="agent-body" />
-          <div className="laptop" />
-        </div>
-      </div>
-
-      <div className="listing-card floating-card">
-        <h3>New Listing</h3>
-        <div className="listing-row">
-          <div className="listing-photo" />
-          <div>
-            <strong>123 Maple Way</strong>
-            <p>Austin, TX 78704</p>
-            <div className="listing-stats">
-              <span>3 bd</span>
-              <span>2.5 ba</span>
-              <span>2,150 sqft</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <OutputCard
-        className="mls-card"
-        label="MLS Listing"
-        text="Stunning modern home in the heart of 78704. Light-filled open floor plan, designer finishes, chef's kitchen, and a private backyard oasis."
+    <div className="marketing-visual">
+      <Image
+        alt="ListingFlow listing, social caption, and buyer email cards over a modern real estate scene"
+        className="marketing-image"
+        height={880}
+        priority
+        src="/marketing-visual.svg"
+        width={720}
       />
-      <OutputCard
-        className="social-card"
-        label="Social Caption"
-        text="Modern design. Prime location. Every day luxury. 123 Maple Way is the one."
-      />
-      <OutputCard
-        className="email-card"
-        label="Buyer Follow-Up Email"
-        text="Hi Alex, just checking in - are you still looking in the 78704 area? I found a few homes that might be a great fit."
-      />
-    </div>
-  );
-}
-
-function OutputCard({ className, label, text }: { className: string; label: string; text: string }) {
-  return (
-    <div className={`output-card ${className}`}>
-      <div className="output-card-head">
-        <strong>{label}</strong>
-        <span>30 sec</span>
-      </div>
-      <p>{text}</p>
-      <button type="button">Copy</button>
     </div>
   );
 }
