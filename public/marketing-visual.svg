@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 880" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 940" role="img" aria-labelledby="title desc">
   <title id="title">ListingFlow marketing visual</title>
   <desc id="desc">A modern listing scene with property, MLS listing, social caption, and buyer follow-up email cards.</desc>
   <defs>
@@ -28,7 +28,7 @@
     </filter>
   </defs>
 
-  <rect width="720" height="880" fill="url(#sky)"/>
+  <rect width="720" height="940" fill="url(#sky)"/>
   <circle cx="104" cy="162" r="132" fill="#fff" opacity="0.5"/>
   <circle cx="628" cy="84" r="108" fill="#b6dcff" opacity="0.48"/>
 
@@ -62,8 +62,8 @@
   </g>
 
   <g filter="url(#shadow)">
-    <rect x="232" y="40" width="418" height="192" rx="18" fill="#ffffff" opacity="0.94"/>
-    <path d="M232 96h418" stroke="#e7eaf0" stroke-width="2"/>
+    <rect x="218" y="36" width="432" height="196" rx="18" fill="#ffffff" opacity="0.94"/>
+    <path d="M218 96h432" stroke="#e7eaf0" stroke-width="2"/>
     <text x="254" y="77" fill="#11182d" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="800">New Listing</text>
     <rect x="254" y="118" width="132" height="78" rx="8" fill="#274154"/>
     <path d="M267 173 322 132l52 41v23H267Z" fill="#b78b5e"/>
@@ -72,49 +72,51 @@
     <text x="410" y="169" fill="#232b42" font-family="Arial, Helvetica, sans-serif" font-size="14">Austin, TX 78704</text>
     <text x="410" y="202" fill="#17213a" font-family="Arial, Helvetica, sans-serif" font-size="13">3 bd     2.5 ba     2,150 sqft</text>
 
-    <rect x="270" y="210" width="386" height="184" rx="16" fill="#ffffff"/>
-    <path d="M270 224c0-8 6-14 14-14h4v184h-4c-8 0-14-6-14-14Z" fill="#3f6de8"/>
-    <path d="M288 224c0-8 6-14 14-14h6v184h-6c-8 0-14-6-14-14Z" fill="#b65cff" opacity="0.65"/>
-    <text x="314" y="250" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">MLS Listing</text>
-    <text x="572" y="250" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
-    <circle cx="634" cy="244" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
-    <text x="314" y="286" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="15">
-      <tspan x="314" dy="0">Stunning modern home in the heart of 78704! Light-</tspan>
-      <tspan x="314" dy="22">filled open floor plan, designer finishes, chef's kitchen,</tspan>
-      <tspan x="314" dy="22">and a private backyard oasis. Walkable to coffee,</tspan>
-      <tspan x="314" dy="22">dining, and parks. Move-in ready!</tspan>
+    <rect x="254" y="256" width="402" height="200" rx="16" fill="#ffffff"/>
+    <path d="M254 270c0-8 6-14 14-14h4v200h-4c-8 0-14-6-14-14Z" fill="#3f6de8"/>
+    <path d="M272 270c0-8 6-14 14-14h6v200h-6c-8 0-14-6-14-14Z" fill="#b65cff" opacity="0.65"/>
+    <text x="306" y="296" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">MLS Listing</text>
+    <text x="572" y="296" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
+    <circle cx="634" cy="290" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
+    <text x="306" y="329" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="14">
+      <tspan x="306" dy="0">Stunning modern home in the heart of 78704.</tspan>
+      <tspan x="306" dy="20">Light-filled open plan, designer finishes,</tspan>
+      <tspan x="306" dy="20">chef's kitchen, and a private backyard oasis.</tspan>
+      <tspan x="306" dy="20">Walkable to coffee, dining, and parks.</tspan>
+      <tspan x="306" dy="20">Move-in ready!</tspan>
     </text>
-    <rect x="314" y="348" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
-    <text x="340" y="367" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
+    <rect x="306" y="410" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
+    <text x="332" y="429" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
 
-    <rect x="274" y="410" width="386" height="164" rx="16" fill="#ffffff"/>
-    <text x="320" y="448" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">Social Caption</text>
-    <text x="578" y="448" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
-    <circle cx="638" cy="442" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
-    <rect x="300" y="430" width="20" height="20" rx="6" fill="#f55c8a"/>
-    <text x="314" y="486" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="15">
+    <rect x="274" y="486" width="386" height="160" rx="16" fill="#ffffff"/>
+    <text x="320" y="524" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">Social Caption</text>
+    <text x="578" y="524" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
+    <circle cx="638" cy="518" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
+    <rect x="300" y="506" width="20" height="20" rx="6" fill="#f55c8a"/>
+    <text x="314" y="562" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="14">
       <tspan x="314" dy="0">Modern design. Prime location. Everyday luxury.</tspan>
-      <tspan x="314" dy="22">123 Maple Way is the one.</tspan>
-      <tspan x="314" dy="22">#JustListed #78704 #AustinRealEstate</tspan>
+      <tspan x="314" dy="21">123 Maple Way is the one.</tspan>
+      <tspan x="314" dy="21">#JustListed #78704 #AustinRealEstate</tspan>
     </text>
-    <rect x="314" y="532" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
-    <text x="340" y="551" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
+    <rect x="314" y="604" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
+    <text x="340" y="623" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
 
-    <rect x="274" y="590" width="386" height="244" rx="16" fill="#ffffff"/>
-    <text x="318" y="628" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">Buyer Follow-Up Email</text>
-    <text x="578" y="628" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
-    <circle cx="638" cy="622" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
-    <path d="M300 612h22v16h-22zM300 613l11 8 11-8" fill="none" stroke="#3f6de8" stroke-width="2"/>
-    <text x="314" y="668" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="15">
+    <rect x="274" y="676" width="386" height="236" rx="16" fill="#ffffff"/>
+    <text x="318" y="714" fill="#121a34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800">Buyer Follow-Up Email</text>
+    <text x="578" y="714" fill="#7b8494" font-family="Arial, Helvetica, sans-serif" font-size="15">30 sec</text>
+    <circle cx="638" cy="708" r="10" fill="#d9f8df" stroke="#63c774" stroke-width="2"/>
+    <path d="M300 698h22v16h-22zM300 699l11 8 11-8" fill="none" stroke="#3f6de8" stroke-width="2"/>
+    <text x="314" y="752" fill="#16213a" font-family="Arial, Helvetica, sans-serif" font-size="14">
       <tspan x="314" dy="0">Hi Alex,</tspan>
-      <tspan x="314" dy="25">Just checking in - are you still looking in the 78704</tspan>
-      <tspan x="314" dy="22">area? I found a few homes that might be a great</tspan>
-      <tspan x="314" dy="22">fit for what you're looking for.</tspan>
-      <tspan x="314" dy="22">Want me to send them over?</tspan>
-      <tspan x="314" dy="36">Best,</tspan>
-      <tspan x="314" dy="22">Your Agent</tspan>
+      <tspan x="314" dy="24">Just checking in - are you still looking</tspan>
+      <tspan x="314" dy="20">in the 78704 area? I found a few</tspan>
+      <tspan x="314" dy="20">new homes that might be a great fit</tspan>
+      <tspan x="314" dy="20">for what you're looking for.</tspan>
+      <tspan x="314" dy="20">Want me to send them over?</tspan>
+      <tspan x="314" dy="28">Best,</tspan>
+      <tspan x="314" dy="20">Your Agent</tspan>
     </text>
-    <rect x="314" y="790" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
-    <text x="340" y="809" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
+    <rect x="314" y="866" width="72" height="28" rx="14" fill="#ffffff" stroke="#e2e5eb"/>
+    <text x="340" y="885" fill="#7c8595" font-family="Arial, Helvetica, sans-serif" font-size="13">Copy</text>
   </g>
 </svg>
