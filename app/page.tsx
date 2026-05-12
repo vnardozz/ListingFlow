@@ -231,10 +231,10 @@ function MarketingVisual() {
       <Image
         alt="ListingFlow listing, social caption, and buyer email cards over a modern real estate scene"
         className="marketing-image"
-        height={1024}
+        height={902}
         priority
         src="/marketing-visual.png"
-        width={1536}
+        width={815}
       />
     </div>
   );
