@@ -1,5 +1,3 @@
-import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
 import { isClerkConfigured } from "@/lib/config";
 import { getHistory, getProfile } from "@/lib/data";
 import ListingFlowApp from "@/app/listing-flow-app";
@@ -22,6 +20,10 @@ export default async function Home() {
     );
   }
 
+  const [{ SignInButton, SignUpButton, UserButton }, { auth }] = await Promise.all([
+    import("@clerk/nextjs"),
+    import("@clerk/nextjs/server"),
+  ]);
   const { userId } = await auth();
   const { profile, history, setupError } = userId
     ? await loadDashboardData(userId)
@@ -29,7 +31,14 @@ export default async function Home() {
 
   return (
     <main className="page-shell">
-      <Header userId={userId} />
+      <Header
+        authComponents={{
+          SignInButton,
+          SignUpButton,
+          UserButton,
+        }}
+        userId={userId}
+      />
 
       {userId ? (
         <ListingFlowApp initialHistory={history} initialProfile={profile} setupError={setupError} />
@@ -68,7 +77,27 @@ async function loadDashboardData(userId: string) {
   }
 }
 
-function Header({ userId }: { userId?: string | null }) {
+type AuthComponents = {
+  SignInButton: React.ComponentType<{
+    children: React.ReactNode;
+    mode?: "modal" | "redirect";
+  }>;
+  SignUpButton: React.ComponentType<{
+    children: React.ReactNode;
+    mode?: "modal" | "redirect";
+  }>;
+  UserButton: React.ComponentType;
+};
+
+function Header({
+  authComponents,
+  userId,
+}: {
+  authComponents: AuthComponents;
+  userId?: string | null;
+}) {
+  const { SignInButton, SignUpButton, UserButton } = authComponents;
+
   return (
     <header className="topbar">
       <div className="brand">
