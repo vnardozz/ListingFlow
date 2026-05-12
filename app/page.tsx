@@ -1,40 +1,47 @@
-import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
+import { isClerkConfigured } from "@/lib/config";
 import { getHistory, getProfile } from "@/lib/data";
 import ListingFlowApp from "@/app/listing-flow-app";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  if (!isClerkConfigured()) {
+    return (
+      <main className="page-shell">
+        <StaticHeader />
+        <section className="hero">
+          <h2>ListingFlow needs Clerk configuration.</h2>
+          <p>
+            Add `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` in Vercel, then
+            redeploy so agents can log in.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
+  const [{ SignInButton, SignUpButton, UserButton }, { auth }] = await Promise.all([
+    import("@clerk/nextjs"),
+    import("@clerk/nextjs/server"),
+  ]);
   const { userId } = await auth();
-  const profile = userId ? await getProfile(userId) : null;
-  const history = userId ? await getHistory(userId) : [];
+  const { profile, history, setupError } = userId
+    ? await loadDashboardData(userId)
+    : { profile: null, history: [], setupError: null };
 
   return (
     <main className="page-shell">
-      <header className="topbar">
-        <div className="brand">
-          <h1>ListingFlow</h1>
-          <p>AI listing copy for real estate agents.</p>
-        </div>
-        {userId ? (
-          <div className="auth-actions">
-            <UserButton />
-          </div>
-        ) : (
-          <div className="auth-actions">
-            <SignInButton mode="modal">
-              <button className="button secondary">Log in</button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <button className="button">Start free trial</button>
-            </SignUpButton>
-          </div>
-        )}
-      </header>
+      <Header
+        authComponents={{
+          SignInButton,
+          SignUpButton,
+          UserButton,
+        }}
+        userId={userId}
+      />
 
       {userId ? (
-        <ListingFlowApp initialHistory={history} initialProfile={profile} />
+        <ListingFlowApp initialHistory={history} initialProfile={profile} setupError={setupError} />
       ) : (
         <section className="hero">
           <h2>Generate polished listing campaigns in one click.</h2>
@@ -50,5 +57,78 @@ export default async function Home() {
         </section>
       )}
     </main>
+  );
+}
+
+async function loadDashboardData(userId: string) {
+  try {
+    const [profile, history] = await Promise.all([getProfile(userId), getHistory(userId)]);
+
+    return { profile, history, setupError: null };
+  } catch (error) {
+    console.error("Failed to load dashboard data", error);
+
+    return {
+      profile: null,
+      history: [],
+      setupError:
+        "ListingFlow could not load saved data. Check Supabase environment variables and run the database migration.",
+    };
+  }
+}
+
+type AuthComponents = {
+  SignInButton: React.ComponentType<{
+    children: React.ReactNode;
+    mode?: "modal" | "redirect";
+  }>;
+  SignUpButton: React.ComponentType<{
+    children: React.ReactNode;
+    mode?: "modal" | "redirect";
+  }>;
+  UserButton: React.ComponentType;
+};
+
+function Header({
+  authComponents,
+  userId,
+}: {
+  authComponents: AuthComponents;
+  userId?: string | null;
+}) {
+  const { SignInButton, SignUpButton, UserButton } = authComponents;
+
+  return (
+    <header className="topbar">
+      <div className="brand">
+        <h1>ListingFlow</h1>
+        <p>AI listing copy for real estate agents.</p>
+      </div>
+      {userId ? (
+        <div className="auth-actions">
+          <UserButton />
+        </div>
+      ) : (
+        <div className="auth-actions">
+          <SignInButton mode="modal">
+            <button className="button secondary">Log in</button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <button className="button">Start free trial</button>
+          </SignUpButton>
+        </div>
+      )}
+    </header>
+  );
+}
+
+function StaticHeader() {
+  return (
+    <header className="topbar">
+      <div className="brand">
+        <h1>ListingFlow</h1>
+        <p>AI listing copy for real estate agents.</p>
+      </div>
+    </header>
   );
 }

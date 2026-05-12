@@ -16,9 +16,10 @@ const emptyForm: ListingFormInput = {
 type Props = {
   initialHistory: GenerationRecord[];
   initialProfile: UserProfile | null;
+  setupError?: string | null;
 };
 
-export default function ListingFlowApp({ initialHistory, initialProfile }: Props) {
+export default function ListingFlowApp({ initialHistory, initialProfile, setupError }: Props) {
   const [activeTab, setActiveTab] = useState<"create" | "history">("create");
   const [form, setForm] = useState<ListingFormInput>(emptyForm);
   const [history, setHistory] = useState(initialHistory);
@@ -109,6 +110,13 @@ export default function ListingFlowApp({ initialHistory, initialProfile }: Props
                 Subscription: {readableSubscriptionStatus(initialProfile?.subscriptionStatus ?? "none")}
               </p>
             </div>
+
+            {setupError ? (
+              <div className="notice" style={{ marginBottom: 18 }}>
+                <strong>Setup needs attention.</strong>
+                <span>{setupError}</span>
+              </div>
+            ) : null}
 
             {!canGenerate ? (
               <div className="notice" style={{ marginBottom: 18 }}>
