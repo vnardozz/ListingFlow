@@ -1,9 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { generateListingContent } from "@/lib/claude";
-import { getClaudeConfigError, isClerkConfigured, isSupabaseConfigured } from "@/lib/config";
-import { getProfile, mapGeneration } from "@/lib/data";
-import { createSupabaseAdmin } from "@/lib/supabase";
+import { getClaudeConfigError, getSupabaseConfigError, isClerkConfigured } from "@/lib/config";
+import { getProfile, saveGeneration } from "@/lib/data";
 import { hasSubscriptionAccess } from "@/lib/subscription";
 import type { ListingFormInput } from "@/lib/types";
 
@@ -18,7 +17,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const configError = getClaudeConfigError();
+  const configError = getClaudeConfigError() ?? getSupabaseConfigError();
   if (configError) {
     return NextResponse.json({ error: configError }, { status: 503 });
   }
@@ -45,42 +44,9 @@ export async function POST(request: Request) {
     }
 
     const content = await generateListingContent(input.data);
-    if (!isSupabaseConfigured()) {
-      return NextResponse.json({
-        generation: {
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
-          ...input.data,
-          ...content,
-        },
-      });
-    }
+    const generation = await saveGeneration({ userId, input: input.data, content });
 
-    const supabase = createSupabaseAdmin();
-    const { data, error } = await supabase
-      .from("generations")
-      .insert({
-        user_id: userId,
-        property_address: input.data.propertyAddress,
-        bedrooms: input.data.bedrooms,
-        bathrooms: input.data.bathrooms,
-        price: input.data.price,
-        features: input.data.features,
-        target_buyer_type: input.data.targetBuyerType,
-        listing_description: content.listingDescription,
-        social_captions: content.socialCaptions,
-        drip_sequence: content.dripSequence,
-      })
-      .select(
-        "id,created_at,property_address,bedrooms,bathrooms,price,features,target_buyer_type,listing_description,social_captions,drip_sequence",
-      )
-      .single();
-
-    if (error) {
-      return NextResponse.json({ error: "Could not save generated content." }, { status: 503 });
-    }
-
-    return NextResponse.json({ generation: mapGeneration(data) });
+    return NextResponse.json({ generation });
   } catch (error) {
     console.error("Generation route failed", error);
     return NextResponse.json(

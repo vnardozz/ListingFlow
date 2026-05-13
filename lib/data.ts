@@ -2,7 +2,9 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { isSupabaseConfigured } from "@/lib/config";
 import type {
   DripEmail,
+  GeneratedContent,
   GenerationRecord,
+  ListingFormInput,
   SocialCaptions,
   SubscriptionStatus,
   UserProfile,
@@ -31,6 +33,12 @@ type GenerationRow = {
   social_captions: SocialCaptions;
   drip_sequence: DripEmail[];
 };
+
+const PROFILE_COLUMNS =
+  "user_id,email,stripe_customer_id,subscription_status,trial_ends_at,current_period_end";
+
+const GENERATION_COLUMNS =
+  "id,created_at,property_address,bedrooms,bathrooms,price,features,target_buyer_type,listing_description,social_captions,drip_sequence";
 
 export function mapProfile(row: ProfileRow | null): UserProfile | null {
   if (!row) {
@@ -71,9 +79,7 @@ export async function getProfile(userId: string) {
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("profiles")
-    .select(
-      "user_id,email,stripe_customer_id,subscription_status,trial_ends_at,current_period_end",
-    )
+    .select(PROFILE_COLUMNS)
     .eq("user_id", userId)
     .maybeSingle<ProfileRow>();
 
@@ -81,7 +87,23 @@ export async function getProfile(userId: string) {
     throw error;
   }
 
-  return mapProfile(data) ?? getClerkProfile(userId);
+  if (data) {
+    return mapProfile(data);
+  }
+
+  const profile = await getClerkProfile(userId);
+  if (!profile) {
+    return null;
+  }
+
+  return upsertProfile({
+    userId,
+    email: profile.email,
+    stripeCustomerId: profile.stripeCustomerId,
+    subscriptionStatus: profile.subscriptionStatus,
+    trialEndsAt: profile.trialEndsAt,
+    currentPeriodEnd: profile.currentPeriodEnd,
+  });
 }
 
 export async function getHistory(userId: string) {
@@ -92,12 +114,9 @@ export async function getHistory(userId: string) {
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("generations")
-    .select(
-      "id,created_at,property_address,bedrooms,bathrooms,price,features,target_buyer_type,listing_description,social_captions,drip_sequence",
-    )
+    .select(GENERATION_COLUMNS)
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
-    .limit(25)
     .returns<GenerationRow[]>();
 
   if (error) {
@@ -105,6 +124,93 @@ export async function getHistory(userId: string) {
   }
 
   return data.map(mapGeneration);
+}
+
+export async function upsertProfile({
+  userId,
+  email,
+  stripeCustomerId,
+  subscriptionStatus = "none",
+  trialEndsAt,
+  currentPeriodEnd,
+}: {
+  userId: string;
+  email: string | null;
+  stripeCustomerId?: string | null;
+  subscriptionStatus?: SubscriptionStatus;
+  trialEndsAt?: string | null;
+  currentPeriodEnd?: string | null;
+}) {
+  const payload: Record<string, string | null> = {
+    user_id: userId,
+    email,
+    subscription_status: subscriptionStatus,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (stripeCustomerId !== undefined) {
+    payload.stripe_customer_id = stripeCustomerId;
+  }
+
+  if (trialEndsAt !== undefined) {
+    payload.trial_ends_at = trialEndsAt;
+  }
+
+  if (currentPeriodEnd !== undefined) {
+    payload.current_period_end = currentPeriodEnd;
+  }
+
+  const supabase = createSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert(payload, { onConflict: "user_id" })
+    .select(PROFILE_COLUMNS)
+    .single<ProfileRow>();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapProfile(data);
+}
+
+export async function saveGeneration({
+  userId,
+  input,
+  content,
+}: {
+  userId: string;
+  input: ListingFormInput;
+  content: GeneratedContent;
+}) {
+  const profile = await getProfile(userId);
+  if (!profile) {
+    throw new Error("Could not create or load Supabase profile before saving generation.");
+  }
+
+  const supabase = createSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("generations")
+    .insert({
+      user_id: userId,
+      property_address: input.propertyAddress,
+      bedrooms: input.bedrooms,
+      bathrooms: input.bathrooms,
+      price: input.price,
+      features: input.features,
+      target_buyer_type: input.targetBuyerType,
+      listing_description: content.listingDescription,
+      social_captions: content.socialCaptions,
+      drip_sequence: content.dripSequence,
+    })
+    .select(GENERATION_COLUMNS)
+    .single<GenerationRow>();
+
+  if (error) {
+    throw error;
+  }
+
+  return mapGeneration(data);
 }
 
 function normalizeFeatures(features: string[]): [string, string, string] {

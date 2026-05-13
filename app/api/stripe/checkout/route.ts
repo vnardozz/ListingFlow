@@ -2,9 +2,9 @@ import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { getStripeConfigError, isClerkConfigured, isSupabaseConfigured } from "@/lib/config";
 import { appUrl, requiredEnv } from "@/lib/env";
-import { getProfile } from "@/lib/data";
-import { createSupabaseAdmin } from "@/lib/supabase";
+import { getProfile, upsertProfile } from "@/lib/data";
 import { stripe } from "@/lib/stripe";
+import type { SubscriptionStatus } from "@/lib/types";
 
 export async function POST() {
   if (!isClerkConfigured()) {
@@ -78,7 +78,7 @@ async function saveStripeCustomer(
   userId: string,
   email: string | null,
   stripeCustomerId: string,
-  subscriptionStatus: string,
+  subscriptionStatus: SubscriptionStatus,
 ) {
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
@@ -94,16 +94,10 @@ async function saveStripeCustomer(
     return;
   }
 
-  const supabase = createSupabaseAdmin();
-  const { error } = await supabase.from("profiles").upsert({
-    user_id: userId,
+  await upsertProfile({
+    userId,
     email,
-    stripe_customer_id: stripeCustomerId,
-    subscription_status: subscriptionStatus,
-    updated_at: new Date().toISOString(),
+    stripeCustomerId,
+    subscriptionStatus,
   });
-
-  if (error) {
-    console.error("Could not persist Stripe customer in Supabase", error);
-  }
 }
