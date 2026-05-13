@@ -1,3 +1,5 @@
+create extension if not exists pgcrypto;
+
 create table if not exists public.profiles (
   user_id text primary key,
   email text,
