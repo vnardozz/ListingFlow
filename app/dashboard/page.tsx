@@ -1,11 +1,16 @@
-import { redirect } from "next/navigation";
 import ListingFlowApp from "@/app/listing-flow-app";
 import { isClerkConfigured } from "@/lib/config";
 import { getHistory, getProfile } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+type DashboardPageProps = {
+  searchParams?: Promise<{
+    billing?: string;
+  }>;
+};
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   if (!isClerkConfigured()) {
     return (
       <main className="page-shell">
@@ -30,13 +35,10 @@ export default async function DashboardPage() {
     import("@clerk/nextjs"),
     import("@clerk/nextjs/server"),
   ]);
-  const { userId } = await auth();
-
-  if (!userId) {
-    redirect("/sign-in");
-  }
+  const { userId } = await auth.protect();
 
   const { profile, history, setupError } = await loadDashboardData(userId);
+  const billingStatus = (await searchParams)?.billing;
 
   return (
     <main className="page-shell">
@@ -50,9 +52,36 @@ export default async function DashboardPage() {
         </div>
       </header>
 
+      <BillingNotice billingStatus={billingStatus} />
       <ListingFlowApp initialHistory={history} initialProfile={profile} setupError={setupError} />
     </main>
   );
+}
+
+function BillingNotice({ billingStatus }: { billingStatus?: string }) {
+  if (billingStatus === "success") {
+    return (
+      <section className="app-wrap" style={{ marginBottom: 18 }}>
+        <div className="notice success-notice">
+          <strong>Welcome to ListingFlow.</strong>
+          <span>Your free trial is active. You can now generate listing content.</span>
+        </div>
+      </section>
+    );
+  }
+
+  if (billingStatus === "cancelled") {
+    return (
+      <section className="app-wrap" style={{ marginBottom: 18 }}>
+        <div className="notice">
+          <strong>Checkout cancelled.</strong>
+          <span>You can start your 7-day free trial whenever you are ready.</span>
+        </div>
+      </section>
+    );
+  }
+
+  return null;
 }
 
 async function loadDashboardData(userId: string) {

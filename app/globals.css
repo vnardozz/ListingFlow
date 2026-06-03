@@ -743,6 +743,11 @@ a {
   color: var(--foreground);
 }
 
+.success-notice {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
 .error {
   color: var(--danger);
   font-weight: 700;
