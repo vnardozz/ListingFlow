@@ -15,7 +15,11 @@ export default async function proxy(request: NextRequest, event: NextFetchEvent)
   }
 
   const { clerkMiddleware } = await import("@clerk/nextjs/server");
-  const middleware = clerkMiddleware();
+  const middleware = clerkMiddleware(async (auth) => {
+    if (request.nextUrl.pathname.startsWith("/dashboard")) {
+      await auth.protect();
+    }
+  });
 
   return middleware(request, event);
 }
