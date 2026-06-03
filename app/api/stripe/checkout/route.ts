@@ -70,12 +70,15 @@ async function createCheckoutSession(stripeCustomerId: string, userId: string, e
 }
 
 async function createCheckoutSessionForCustomer(stripeCustomerId: string, userId: string) {
+  const stripePriceId = requiredEnv("STRIPE_PRICE_ID");
+  console.log("Creating Stripe checkout session with STRIPE_PRICE_ID:", stripePriceId);
+
   return stripe().checkout.sessions.create({
     mode: "subscription",
     customer: stripeCustomerId,
     line_items: [
       {
-        price: requiredEnv("STRIPE_PRICE_ID"),
+        price: stripePriceId,
         quantity: 1,
       },
     ],
