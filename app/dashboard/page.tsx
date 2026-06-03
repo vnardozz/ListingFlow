@@ -33,7 +33,7 @@ export default async function DashboardPage() {
   const { userId } = await auth();
 
   if (!userId) {
-    redirect("/");
+    redirect("/sign-in");
   }
 
   const { profile, history, setupError } = await loadDashboardData(userId);
