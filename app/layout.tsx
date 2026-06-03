@@ -20,16 +20,25 @@ export default async function RootLayout({
     );
   }
 
-  const { ClerkProvider } = await import("@clerk/nextjs");
+  const [{ ClerkProvider }, { ui }] = await Promise.all([
+    import("@clerk/nextjs"),
+    import("@clerk/ui"),
+  ]);
+  const legacyRedirectProps = {
+    afterSignInUrl: "/dashboard",
+    afterSignUpUrl: "/dashboard",
+  } as Record<string, string>;
 
   return (
     <ClerkProvider
+      {...legacyRedirectProps}
       signInFallbackRedirectUrl="/dashboard"
       signInForceRedirectUrl="/dashboard"
       signInUrl="/sign-in"
       signUpFallbackRedirectUrl="/dashboard"
       signUpForceRedirectUrl="/dashboard"
       signUpUrl="/sign-up"
+      ui={ui}
     >
       <html lang="en">
         <body>{children}</body>

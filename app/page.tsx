@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { isClerkConfigured } from "@/lib/config";
-import { getHistory, getProfile } from "@/lib/data";
-import ListingFlowApp from "@/app/listing-flow-app";
 
 export const dynamic = "force-dynamic";
 
@@ -15,53 +13,8 @@ export default async function Home() {
     );
   }
 
-  const [{ UserButton }, { auth }] = await Promise.all([
-    import("@clerk/nextjs"),
-    import("@clerk/nextjs/server"),
-  ]);
-  const { userId } = await auth();
-  const { profile, history, setupError } = userId
-    ? await loadDashboardData(userId)
-    : { profile: null, history: [], setupError: null };
-
-  if (!userId) {
-    return <LandingPage />;
-  }
-
-  return (
-    <main className="page-shell">
-      <Header
-        authComponents={{
-          UserButton,
-        }}
-        userId={userId}
-      />
-
-      <ListingFlowApp initialHistory={history} initialProfile={profile} setupError={setupError} />
-    </main>
-  );
+  return <LandingPage />;
 }
-
-async function loadDashboardData(userId: string) {
-  try {
-    const [profile, history] = await Promise.all([getProfile(userId), getHistory(userId)]);
-
-    return { profile, history, setupError: null };
-  } catch (error) {
-    console.error("Failed to load dashboard data", error);
-
-    return {
-      profile: null,
-      history: [],
-      setupError:
-        "ListingFlow could not load saved data. Check Supabase environment variables and run the database migration.",
-    };
-  }
-}
-
-type AuthComponents = {
-  UserButton: React.ComponentType;
-};
 
 function LandingPage({
   setupMessage,
@@ -194,39 +147,6 @@ function MarketingVisual() {
         width={815}
       />
     </div>
-  );
-}
-
-function Header({
-  authComponents,
-  userId,
-}: {
-  authComponents: AuthComponents;
-  userId?: string | null;
-}) {
-  const { UserButton } = authComponents;
-
-  return (
-    <header className="topbar">
-      <div className="brand">
-        <h1>ListingFlow</h1>
-        <p>AI listing copy for real estate agents.</p>
-      </div>
-      {userId ? (
-        <div className="auth-actions">
-          <UserButton />
-        </div>
-      ) : (
-        <div className="auth-actions">
-          <Link className="button secondary" href="/sign-in">
-            Log in
-          </Link>
-          <Link className="button" href="/sign-up">
-            Start free trial
-          </Link>
-        </div>
-      )}
-    </header>
   );
 }
 
