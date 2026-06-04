@@ -28,6 +28,7 @@ export default function ListingFlowApp({ initialHistory, initialProfile, setupEr
   const [isGenerating, setIsGenerating] = useState(false);
   const [isBillingLoading, setIsBillingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(setupError ?? null);
   const canGenerate = hasSubscriptionAccess(initialProfile);
   const selectedHistory = useMemo(
     () => history.find((item) => item.id === selectedId) ?? history[0] ?? null,
@@ -37,6 +38,7 @@ export default function ListingFlowApp({ initialHistory, initialProfile, setupEr
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setNotice(setupError ?? null);
     setIsGenerating(true);
 
     try {
@@ -47,7 +49,11 @@ export default function ListingFlowApp({ initialHistory, initialProfile, setupEr
         },
         body: JSON.stringify(form),
       });
-      const payload = (await response.json()) as { generation?: GenerationRecord; error?: string };
+      const payload = (await response.json()) as {
+        generation?: GenerationRecord;
+        error?: string;
+        warning?: string;
+      };
 
       if (!response.ok || !payload.generation) {
         throw new Error(payload.error ?? "Generation failed.");
@@ -56,6 +62,7 @@ export default function ListingFlowApp({ initialHistory, initialProfile, setupEr
       setLatestResult(payload.generation);
       setHistory((current) => [payload.generation!, ...current]);
       setSelectedId(payload.generation.id);
+      setNotice(payload.warning ?? setupError ?? null);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Generation failed.");
     } finally {
@@ -111,10 +118,10 @@ export default function ListingFlowApp({ initialHistory, initialProfile, setupEr
               </p>
             </div>
 
-            {setupError ? (
+            {notice ? (
               <div className="notice" style={{ marginBottom: 18 }}>
-                <strong>Setup needs attention.</strong>
-                <span>{setupError}</span>
+                <strong>{notice === setupError ? "Setup needs attention." : "Heads up."}</strong>
+                <span>{notice}</span>
               </div>
             ) : null}
 

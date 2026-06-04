@@ -1,10 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { generateListingContent } from "@/lib/claude";
-import { getClaudeConfigError, getSupabaseConfigError, isClerkConfigured } from "@/lib/config";
+import { getClaudeConfigError, isClerkConfigured, isSupabaseConfigured } from "@/lib/config";
 import { getProfile, saveGeneration } from "@/lib/data";
 import { hasSubscriptionAccess } from "@/lib/subscription";
-import type { ListingFormInput } from "@/lib/types";
+import type { GeneratedContent, ListingFormInput } from "@/lib/types";
 
 export async function POST(request: Request) {
   if (!isClerkConfigured()) {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const configError = getClaudeConfigError() ?? getSupabaseConfigError();
+  const configError = getClaudeConfigError();
   if (configError) {
     return NextResponse.json({ error: configError }, { status: 503 });
   }
@@ -44,6 +44,14 @@ export async function POST(request: Request) {
     }
 
     const content = await generateListingContent(input.data);
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json({
+        generation: unsavedGeneration(input.data, content),
+        warning:
+          "Supabase is not configured, so this generation was not saved to history.",
+      });
+    }
+
     const generation = await saveGeneration({ userId, input: input.data, content });
 
     return NextResponse.json({ generation });
@@ -96,4 +104,13 @@ function validateInput(payload: unknown): { ok: true; data: ListingFormInput } |
 
 function toCleanString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function unsavedGeneration(input: ListingFormInput, content: GeneratedContent) {
+  return {
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    ...input,
+    ...content,
+  };
 }
