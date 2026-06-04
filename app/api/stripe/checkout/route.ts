@@ -6,7 +6,7 @@ import { getProfile, upsertProfile } from "@/lib/data";
 import { stripe } from "@/lib/stripe";
 import type { SubscriptionStatus } from "@/lib/types";
 
-export async function POST() {
+export async function POST(request: Request) {
   if (!isClerkConfigured()) {
     return NextResponse.json({ error: "Clerk authentication is not configured." }, { status: 503 });
   }
@@ -31,7 +31,12 @@ export async function POST() {
     });
     const startingCustomerId = profile?.stripeCustomerId ?? (await createStripeCustomer(userId, email));
 
-    const { session, stripeCustomerId } = await createCheckoutSession(startingCustomerId, userId, email);
+    const { session, stripeCustomerId } = await createCheckoutSession(
+      startingCustomerId,
+      userId,
+      email,
+      requestAppUrl(request),
+    );
 
     if (!session.url) {
       throw new Error("Stripe did not return a checkout URL.");
@@ -50,10 +55,15 @@ export async function POST() {
   }
 }
 
-async function createCheckoutSession(stripeCustomerId: string, userId: string, email: string | null) {
+async function createCheckoutSession(
+  stripeCustomerId: string,
+  userId: string,
+  email: string | null,
+  checkoutBaseUrl: string,
+) {
   try {
     return {
-      session: await createCheckoutSessionForCustomer(stripeCustomerId, userId),
+      session: await createCheckoutSessionForCustomer(stripeCustomerId, userId, checkoutBaseUrl),
       stripeCustomerId,
     };
   } catch (error) {
@@ -63,13 +73,13 @@ async function createCheckoutSession(stripeCustomerId: string, userId: string, e
 
     const customerId = await createStripeCustomer(userId, email);
     return {
-      session: await createCheckoutSessionForCustomer(customerId, userId),
+      session: await createCheckoutSessionForCustomer(customerId, userId, checkoutBaseUrl),
       stripeCustomerId: customerId,
     };
   }
 }
 
-async function createCheckoutSessionForCustomer(stripeCustomerId: string, userId: string) {
+async function createCheckoutSessionForCustomer(stripeCustomerId: string, userId: string, checkoutBaseUrl: string) {
   const stripePriceId = requiredEnv("STRIPE_PRICE_ID");
   console.log("Creating Stripe checkout session with STRIPE_PRICE_ID:", stripePriceId);
 
@@ -89,12 +99,29 @@ async function createCheckoutSessionForCustomer(stripeCustomerId: string, userId
       },
     },
     allow_promotion_codes: false,
-    success_url: `${appUrl()}/dashboard?billing=success`,
-    cancel_url: `${appUrl()}/dashboard?billing=cancelled`,
+    success_url: `${checkoutBaseUrl}/dashboard?billing=success`,
+    cancel_url: `${checkoutBaseUrl}/dashboard?billing=cancelled`,
     metadata: {
       clerkUserId: userId,
     },
   });
+}
+
+function requestAppUrl(request: Request) {
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const host = forwardedHost ?? request.headers.get("host");
+
+  if (host) {
+    const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
+    return `${forwardedProto}://${host}`.replace(/\/+$/, "");
+  }
+
+  const origin = request.headers.get("origin");
+  if (origin) {
+    return origin.replace(/\/+$/, "");
+  }
+
+  return appUrl();
 }
 
 async function createStripeCustomer(userId: string, email: string | null) {
