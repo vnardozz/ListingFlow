@@ -1,37 +1,26 @@
-import type { NextFetchEvent, NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { isClerkConfigured } from "@/lib/config";
 
-export default async function proxy(request: NextRequest, event: NextFetchEvent) {
-  if (request.nextUrl.searchParams.has("__clerk_handshake")) {
-    const url = request.nextUrl.clone();
-    url.searchParams.delete("__clerk_handshake");
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/webhooks(.*)",
+]);
 
-    return NextResponse.redirect(url);
+const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
+
+export default clerkMiddleware(async (auth, request) => {
+  const { userId } = await auth();
+
+  if (userId && isAuthRoute(request)) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  if (!isClerkConfigured()) {
-    return NextResponse.next();
+  if (!isPublicRoute(request)) {
+    await auth.protect();
   }
-
-  const { clerkMiddleware } = await import("@clerk/nextjs/server");
-  const middleware = clerkMiddleware(async (auth) => {
-    const authState = await auth();
-    const isAuthRoute =
-      request.nextUrl.pathname.startsWith("/sign-in") || request.nextUrl.pathname.startsWith("/sign-up");
-    const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
-
-    if (authState.userId && isAuthRoute) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-
-    if (!authState.userId && isDashboardRoute) {
-      return authState.redirectToSignIn({ returnBackUrl: request.url });
-    }
-  });
-
-  return middleware(request, event);
-}
+});
 
 export const config = {
   matcher: [
