@@ -1,6 +1,7 @@
 import ListingFlowApp from "@/app/listing-flow-app";
+import { syncStripeSubscriptionStatus } from "@/lib/billing";
 import { isClerkConfigured } from "@/lib/config";
-import { getHistory, getProfile } from "@/lib/data";
+import { getHistory } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -86,7 +87,8 @@ function BillingNotice({ billingStatus }: { billingStatus?: string }) {
 
 async function loadDashboardData(userId: string) {
   try {
-    const [profile, history] = await Promise.all([getProfile(userId), getHistory(userId)]);
+    const profile = await syncStripeSubscriptionStatus(userId);
+    const history = await getHistory(userId);
 
     return { profile, history, setupError: null };
   } catch (error) {
